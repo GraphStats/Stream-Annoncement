@@ -49,7 +49,7 @@
 
                 const text = annonces.join(" • ");
                 marquee.innerHTML = text + " • " + text; // texte doublé pour éviter le vide
-                marquee.style.animationDuration = `${text.length / 7}s`;
+                marquee.style.animationDuration = `${text.length / 5}s`;
             }
 
             socket.on("update", update);
