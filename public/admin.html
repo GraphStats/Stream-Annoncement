@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="fr">
+    <head>
+        <meta charset="UTF-8" />
+        <title>Admin - Annonces</title>
+        <script src="/socket.io/socket.io.js"></script>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                margin: 30px;
+                background: #f6f6f6;
+            }
+            h1 {
+                color: #333;
+            }
+            input {
+                padding: 8px;
+                width: 300px;
+                font-size: 16px;
+            }
+            button {
+                padding: 8px 12px;
+                font-size: 16px;
+                margin-left: 8px;
+                cursor: pointer;
+            }
+            ul {
+                list-style: none;
+                padding: 0;
+                margin-top: 20px;
+            }
+            li {
+                background: white;
+                padding: 10px;
+                margin-bottom: 8px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                border-radius: 8px;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>📢 Admin - Annonces</h1>
+        <input id="text" placeholder="Texte de l'annonce..." />
+        <button id="add">Ajouter à la liste</button>
+
+        <h2>Annonces actives</h2>
+        <ul id="list"></ul>
+
+        <script>
+            const socket = io();
+            const list = document.getElementById("list");
+            const input = document.getElementById("text");
+            const addBtn = document.getElementById("add");
+
+            function render(annonces) {
+                list.innerHTML = "";
+                annonces.forEach((text, i) => {
+                    const li = document.createElement("li");
+
+                    const span = document.createElement("span");
+                    span.textContent = text;
+                    li.appendChild(span);
+
+                    const edit = document.createElement("button");
+                    edit.textContent = "✏️ Modifier";
+                    edit.onclick = () => {
+                        const newText = prompt("Modifier l'annonce :", text);
+                        if (newText !== null && newText.trim() !== "") {
+                            fetch(`/annonces/${i}`, {
+                                method: "PUT",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({ text: newText.trim() }),
+                            });
+                        }
+                    };
+
+                    const del = document.createElement("button");
+                    del.textContent = "🗑️ Supprimer";
+                    del.onclick = () => {
+                        fetch(`/annonces/${i}`, { method: "DELETE" });
+                    };
+
+                    li.appendChild(edit);
+                    li.appendChild(del);
+                    list.appendChild(li);
+                });
+            }
+
+            addBtn.onclick = () => {
+                const text = input.value.trim();
+                if (text) {
+                    fetch("/annonces", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ text }),
+                    });
+                    input.value = "";
+                }
+            };
+
+            socket.on("update", render);
+        </script>
+    </body>
+</html>

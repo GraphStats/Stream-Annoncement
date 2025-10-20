@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="fr">
+    <head>
+        <meta charset="UTF-8" />
+        <title>Client - Annonces</title>
+        <script src="/socket.io/socket.io.js"></script>
+        <style>
+            body {
+                margin: 0;
+                overflow: hidden;
+                background: #ffffff00;
+                color: white;
+                font-family: "Segoe UI Black", sans-serif;
+                font-size: 32px;
+                white-space: nowrap;
+            }
+
+            #marquee {
+                position: absolute;
+                top: 50%;
+                transform: translateY(-50%);
+                display: inline-block;
+                animation: scroll linear infinite;
+            }
+
+            @keyframes scroll {
+                from {
+                    transform: translate(0, -50%);
+                }
+                to {
+                    transform: translate(-50%, -50%);
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div id="marquee"></div>
+
+        <script>
+            const socket = io();
+            const marquee = document.getElementById("marquee");
+
+            function update(annonces) {
+                if (!annonces.length) {
+                    marquee.textContent = "Aucune annonce disponible...";
+                    marquee.style.animationDuration = "20s";
+                    return;
+                }
+
+                const text = annonces.join(" • ");
+                marquee.innerHTML = text + " • " + text; // texte doublé pour éviter le vide
+                marquee.style.animationDuration = `${text.length / 7}s`;
+            }
+
+            socket.on("update", update);
+        </script>
+    </body>
+</html>
