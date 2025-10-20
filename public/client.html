@@ -47,8 +47,8 @@
                     return;
                 }
 
-                const text = annonces.join(" • ");
-                marquee.innerHTML = text + " • " + text; // texte doublé pour éviter le vide
+                const text = annonces.join(" | ");
+                marquee.innerHTML = text + " | " + text; // texte doublé pour éviter le vide
                 marquee.style.animationDuration = `${text.length / 5}s`;
             }
 
