@@ -17,18 +17,15 @@ const FILE_PATH = path.join(__dirname, "annonces.json");
 app.use(express.json());
 app.use(express.static("public"));
 
-// Lire les annonces depuis le JSON
 function readAnnonces() {
   if (!fs.existsSync(FILE_PATH)) return [];
   return JSON.parse(fs.readFileSync(FILE_PATH, "utf8") || "[]");
 }
 
-// Écrire dans le JSON
 function writeAnnonces(data) {
   fs.writeFileSync(FILE_PATH, JSON.stringify(data, null, 2));
 }
 
-// --- Routes ---
 app.get("/annonces", (req, res) => {
   res.json(readAnnonces());
 });
@@ -56,7 +53,6 @@ app.put("/annonces/:index", (req, res) => {
 app.get("/admin", (_, res) => res.sendFile(__dirname + "/public/admin.html"));
 app.get("/client", (_, res) => res.sendFile(__dirname + "/public/client.html"));
 
-// --- WebSocket ---
 io.on("connection", (socket) => {
   socket.emit("update", readAnnonces());
 });
